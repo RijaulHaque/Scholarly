@@ -1,7 +1,15 @@
+using Microsoft.EntityFrameworkCore;
+using Scholarly.DAL;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddDbContext<DatabaseContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("local_db") ?? throw new InvalidOperationException("Connection string 'local_db' not found.")));
+
+
 
 var app = builder.Build();
 
