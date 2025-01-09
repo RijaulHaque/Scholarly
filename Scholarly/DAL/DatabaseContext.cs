@@ -12,6 +12,6 @@ namespace Scholarly.DAL
         {
         }
 
-        public DbSet<users> user { get; set; }
+        public DbSet<Users> user { get; set; }
     }
 }
