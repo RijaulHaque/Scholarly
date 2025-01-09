@@ -2,14 +2,18 @@
 {
     public class Classes
     {
-        public string class_id { get; set; }
+        //PK
+        public required string class_id { get; set; }
 
-        public string class_name { get; set; }
+        public required string class_name { get; set; }
 
-        public string class_description { get; set; }
+        //FK
+        public required Users Id { get; set; }
 
-        public string teacher_id { get; set; }  
+        public required ICollection<Attendance> atttendance_obj { get; set; } = new List<Attendance>();
 
+        public required ICollection<Enrollments> enrollments_obj { get; set; } = new List<Enrollments>();
 
+        public required ICollection<Grades> grades_obj { get; set; } = new List<Grades>();
     }
 }
