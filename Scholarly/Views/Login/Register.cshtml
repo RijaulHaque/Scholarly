@@ -6,7 +6,7 @@
 
 <h2>Login</h2>
 
-@using (Html.BeginForm("action","controller"))
+@using (Html.BeginForm("action", "controller"))
 {
     @Html.AntiForgeryToken()
 
@@ -22,7 +22,5 @@
         @Html.ValidationMessageFor(model => model.Password)
     </div>
 
-    <button type="submit" class="btn btn-primary">Login</button>
+    <button type="submit" class="btn btn-primary">Register</button>
 }
-
-<input type="text" name="username" />
