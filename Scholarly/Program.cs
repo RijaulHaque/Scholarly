@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Scholarly.DAL;
 
@@ -9,7 +10,12 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<DatabaseContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("local_db") ?? throw new InvalidOperationException("Connection string 'local_db' not found.")));
 
-
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Login";
+        options.AccessDeniedPath = "/Login";
+    });
 
 var app = builder.Build();
 
@@ -25,7 +31,7 @@ app.UseHttpsRedirection();
 app.UseRouting();
 
 app.UseAuthorization();
-
+app.UseAuthentication();
 app.MapStaticAssets();
 
 app.MapControllerRoute(
