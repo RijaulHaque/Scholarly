@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;  // Required for validation annotations
 
-namespace Scholarly.Models  // Replace 'YourAppName' with your actual project namespace
+namespace Scholarly.Models  
 {
     
     public class LoginModel
