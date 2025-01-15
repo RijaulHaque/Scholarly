@@ -12,8 +12,8 @@ using Scholarly.DAL;
 namespace Scholarly.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20250110094836_first")]
-    partial class first
+    [Migration("20250115054329_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -141,7 +141,11 @@ namespace Scholarly.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Password")
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -151,11 +155,12 @@ namespace Scholarly.Migrations
 
                     b.Property<string>("Username")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("user");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("Scholarly.Models.Attendance", b =>
