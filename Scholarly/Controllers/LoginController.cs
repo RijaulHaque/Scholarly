@@ -113,11 +113,153 @@
 ///////########################## NEWLY ADDED CODE ##################################
 
 
+//using Microsoft.AspNetCore.Mvc;
+//using Microsoft.EntityFrameworkCore;
+//using Microsoft.AspNetCore.Identity;
+//using Scholarly.DAL;
+//using Scholarly.Models;
+
+//namespace Scholarly.Controllers
+//{
+//    public class LoginController : Controller
+//    {
+//        private readonly DatabaseContext _context;
+//        private readonly IPasswordHasher<Users> _passwordHasher;
+
+//        public LoginController(DatabaseContext context, IPasswordHasher<Users> passwordHasher)
+//        {
+//            _context = context;
+//            _passwordHasher = passwordHasher;
+//        }
+
+//        // GET: Login
+//        public IActionResult Index()
+//        {
+//            return View();
+//        }
+
+//        // POST: Login
+//        [HttpPost]
+//        [ValidateAntiForgeryToken]
+//        public async Task<IActionResult> Index(LoginModel model)
+//        {
+//            if (ModelState.IsValid)
+//            {
+//                // Find the user by username
+//                var user = await _context.User.FirstOrDefaultAsync(u => u.Username == model.Username);
+
+//                if (user != null)
+//                {
+//                    // Verify the password using the stored hash
+//                    var result = _passwordHasher.VerifyHashedPassword(user, user.Password, model.Password);
+
+//                    if (result == PasswordVerificationResult.Success)
+//                    {
+//                        // Successful login: Redirect based on user role
+//                        if (user.Roles == "Student")
+//                        {
+//                            // Redirect student to their dashboard or profile
+//                            return RedirectToAction("StudentDashboard", "Home");
+//                        }
+//                        else if (user.Roles == "Teacher")
+//                        {
+//                            // Redirect teacher to their dashboard or profile
+//                            return RedirectToAction("TeacherDashboard", "Home");
+//                        }
+//                        else
+//                        {
+//                            // Redirect to a default page or error page if the role is unknown
+//                            return RedirectToAction("Index", "Home");
+//                        }
+//                    }
+//                }
+
+//                // If login fails, show an error message
+//                ModelState.AddModelError("", "Invalid login attempt.");
+//            }
+
+//            // Return to the same view with validation errors
+//            return View(model);
+//        }
+
+//        // Register GET method
+//        public IActionResult Register()
+//        {
+//            return View();
+//        }
+
+//        // Register POST method
+//        [HttpPost]
+//        [ValidateAntiForgeryToken]
+//        public async Task<IActionResult> Register(LoginModel model)
+//        {
+//            if (ModelState.IsValid)
+//            {
+//                // Check if the username already exists in the database
+//                var existingUser = await _context.User
+//                    .FirstOrDefaultAsync(u => u.Username == model.Username);
+
+//                if (existingUser != null)
+//                {
+//                    ModelState.AddModelError("", "Username already in use.");
+//                    return View(model);
+//                }
+
+//                // Hash the password before storing it
+//                var hashedPassword = _passwordHasher.HashPassword(null, model.Password);
+
+//                // Create a new user object based on role selection
+//                var user = new Users
+//                {
+//                    Username = model.Username,
+//                    Password = hashedPassword,
+//                    Roles = model.Role // Example: 'Student' or 'Teacher'
+//                };
+
+//                _context.User.Add(user);  // Add user to the database
+//                await _context.SaveChangesAsync();  // Save changes asynchronously
+
+//                // After creating user, create their Student or Teacher profile if necessary
+//                if (model.Role == "Student")
+//                {
+//                    var student = new Students
+//                    {
+//                        Name = model.Username,  // You may want to gather more student information here
+//                        Year = 1  // Example default, adjust as needed
+//                    };
+
+//                    _context.student.Add(student);
+//                    await _context.SaveChangesAsync();
+//                }
+//                else if (model.Role == "Teacher")
+//                {
+//                    var teacher = new Teachers
+//                    {
+//                        Name = model.Username  // You may want to gather more teacher information here
+//                    };
+
+//                    _context.Teacher.Add(teacher);
+//                    await _context.SaveChangesAsync();
+//                }
+
+//                // Redirect to login page after successful registration
+//                return RedirectToAction("Index", "Home");
+//            }
+
+//            // If model validation fails, return to the registration view
+//            return View(model);
+//        }
+//    }
+//}
+
+
+//######################## SECOND NEW CODE added by Rijaul ########################
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
-using Scholarly.DAL;
 using Scholarly.Models;
+using Scholarly.DAL;
 
 namespace Scholarly.Controllers
 {
@@ -146,29 +288,26 @@ namespace Scholarly.Controllers
             if (ModelState.IsValid)
             {
                 // Find the user by username
-                var user = await _context.user.FirstOrDefaultAsync(u => u.Username == model.Username);
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == model.Username);
 
                 if (user != null)
                 {
                     // Verify the password using the stored hash
-                    var result = _passwordHasher.VerifyHashedPassword(user, user.Password, model.Password);
+                    var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, model.Password);
 
                     if (result == PasswordVerificationResult.Success)
                     {
                         // Successful login: Redirect based on user role
                         if (user.Roles == "Student")
                         {
-                            // Redirect student to their dashboard or profile
                             return RedirectToAction("StudentDashboard", "Home");
                         }
                         else if (user.Roles == "Teacher")
                         {
-                            // Redirect teacher to their dashboard or profile
                             return RedirectToAction("TeacherDashboard", "Home");
                         }
                         else
                         {
-                            // Redirect to a default page or error page if the role is unknown
                             return RedirectToAction("Index", "Home");
                         }
                     }
@@ -178,75 +317,71 @@ namespace Scholarly.Controllers
                 ModelState.AddModelError("", "Invalid login attempt.");
             }
 
-            // Return to the same view with validation errors
             return View(model);
         }
 
-        // Register GET method
+        // GET: Register
         public IActionResult Register()
         {
-            return View();
+            return View("~/Views/Register/Register.cshtml");
         }
 
-        // Register POST method
+        // POST: Register
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(LoginModel model)
+        public async Task<IActionResult> Register(RegisterViewModel model)
         {
             if (ModelState.IsValid)
             {
-                // Check if the username already exists in the database
-                var existingUser = await _context.user
-                    .FirstOrDefaultAsync(u => u.Username == model.Username);
+                // Check if the username or email already exists
+                var existingUser = await _context.Users
+                    .FirstOrDefaultAsync(u => u.Username == model.Username || u.Email == model.Email);
 
                 if (existingUser != null)
                 {
-                    ModelState.AddModelError("", "Username already in use.");
+                    ModelState.AddModelError("", "Username or Email already in use.");
                     return View(model);
                 }
 
                 // Hash the password before storing it
                 var hashedPassword = _passwordHasher.HashPassword(null, model.Password);
 
-                // Create a new user object based on role selection
+                // Create a new user object
                 var user = new Users
                 {
                     Username = model.Username,
-                    Password = hashedPassword,
-                    Roles = model.Role // Example: 'Student' or 'Teacher'
+                    Email = model.Email,
+                    PasswordHash = hashedPassword,
+                    Roles = model.Roles // Example: 'Student' or 'Teacher'
                 };
 
-                _context.user.Add(user);  // Add user to the database
-                await _context.SaveChangesAsync();  // Save changes asynchronously
+                _context.Users.Add(user); // Add user to the database
+                await _context.SaveChangesAsync();
 
-                // After creating user, create their Student or Teacher profile if necessary
-                if (model.Role == "Student")
+                // Create related profile based on role
+                if (model.Roles == "Student")
                 {
                     var student = new Students
                     {
-                        Name = model.Username,  // You may want to gather more student information here
-                        Year = 1  // Example default, adjust as needed
+                        Name = model.Username,
+                        Year = 1 // Default value
                     };
-
                     _context.student.Add(student);
-                    await _context.SaveChangesAsync();
                 }
-                else if (model.Role == "Teacher")
+                else if (model.Roles == "Teacher")
                 {
                     var teacher = new Teachers
                     {
-                        Name = model.Username  // You may want to gather more teacher information here
+                        Name = model.Username
                     };
-
                     _context.Teacher.Add(teacher);
-                    await _context.SaveChangesAsync();
                 }
 
-                // Redirect to login page after successful registration
+                await _context.SaveChangesAsync();
+
                 return RedirectToAction("Index", "Home");
             }
 
-            // If model validation fails, return to the registration view
             return View(model);
         }
     }
