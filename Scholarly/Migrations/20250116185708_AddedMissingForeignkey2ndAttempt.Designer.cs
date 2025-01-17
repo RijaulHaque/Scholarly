@@ -12,8 +12,8 @@ using Scholarly.DAL;
 namespace Scholarly.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20250115060624_RenameUserTable")]
-    partial class RenameUserTable
+    [Migration("20250116185708_AddedMissingForeignkey2ndAttempt")]
+    partial class AddedMissingForeignkey2ndAttempt
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -39,7 +39,7 @@ namespace Scholarly.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("EnrollmentsId")
+                    b.Property<int>("EnrollmentsId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -59,7 +59,8 @@ namespace Scholarly.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
@@ -74,7 +75,7 @@ namespace Scholarly.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("CoursesId")
+                    b.Property<int>("CoursesId")
                         .HasColumnType("int");
 
                     b.Property<float>("Grade")
@@ -106,7 +107,8 @@ namespace Scholarly.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<int>("Year")
                         .HasColumnType("int");
@@ -126,14 +128,15 @@ namespace Scholarly.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
 
                     b.ToTable("Teacher");
                 });
 
-            modelBuilder.Entity("Scholarly.Models.Users", b =>
+            modelBuilder.Entity("Scholarly.Models.user", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -160,21 +163,29 @@ namespace Scholarly.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("user", (string)null);
                 });
 
             modelBuilder.Entity("Scholarly.Models.Attendance", b =>
                 {
-                    b.HasOne("Scholarly.Models.Enrollments", null)
+                    b.HasOne("Scholarly.Models.Enrollments", "Enrollments")
                         .WithMany("Attendance")
-                        .HasForeignKey("EnrollmentsId");
+                        .HasForeignKey("EnrollmentsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Enrollments");
                 });
 
             modelBuilder.Entity("Scholarly.Models.Enrollments", b =>
                 {
-                    b.HasOne("Scholarly.Models.Courses", null)
+                    b.HasOne("Scholarly.Models.Courses", "Courses")
                         .WithMany("Enrollments")
-                        .HasForeignKey("CoursesId");
+                        .HasForeignKey("CoursesId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Courses");
                 });
 
             modelBuilder.Entity("Scholarly.Models.Courses", b =>

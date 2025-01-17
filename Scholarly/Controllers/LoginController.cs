@@ -255,6 +255,211 @@
 
 //######################## SECOND NEW CODE added by Rijaul ########################
 
+//using Microsoft.AspNetCore.Mvc;
+//using Microsoft.EntityFrameworkCore;
+//using Microsoft.AspNetCore.Identity;
+//using Scholarly.Models;
+//using Scholarly.DAL;
+
+//namespace Scholarly.Controllers
+//{
+//    public class LoginController : Controller
+//    {
+//        private readonly DatabaseContext _context;
+//        private readonly IPasswordHasher<user> _passwordHasher;
+
+//        public LoginController(DatabaseContext context, IPasswordHasher<user> passwordHasher)
+//        {
+//            _context = context;
+//            _passwordHasher = passwordHasher;
+//        }
+
+//        // GET: Login
+//        public IActionResult Index()
+//        {
+//            return View();
+//        }
+
+//        // POST: Login
+//        [HttpPost]
+//        [ValidateAntiForgeryToken]
+//        public async Task<IActionResult> Index(LoginModel model)
+//        {
+//            if (ModelState.IsValid)
+//            {
+//                // Find the user by username
+//                var user = await _context.user.FirstOrDefaultAsync(u => u.Username == model.Username);
+
+//                if (user != null)
+//                {
+//                    // Verify the password using the stored hash
+//                    var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, model.Password);
+
+//                    if (result == PasswordVerificationResult.Success)
+//                    {
+//                        // Successful login: Redirect based on user role
+//                        if (user.Roles == "Student")
+//                        {
+//                            return RedirectToAction("StudentDashboard", "Dashboard");
+//                        }
+//                        else if (user.Roles == "Teacher")
+//                        {
+//                            return RedirectToAction("TeacherDashboard", "Home");
+//                        }
+//                        else
+//                        {
+//                            return RedirectToAction("Index", "Home");
+//                        }
+//                    }
+//                }
+
+//                // If login fails, show an error message
+//                ModelState.AddModelError("", "Invalid login attempt.");
+//            }
+
+//            return View(model);
+//        }
+
+//    }
+//}
+
+//######################## THIRD NEW CODE added by Rijaul ########################
+
+//using Microsoft.AspNetCore.Mvc;
+//using Microsoft.EntityFrameworkCore;
+//using Microsoft.AspNetCore.Identity;
+//using Scholarly.Models;
+//using Scholarly.DAL;
+
+//namespace Scholarly.Controllers
+//{
+//    public class LoginController : Controller
+//    {
+//        private readonly DatabaseContext _context;
+//        private readonly IPasswordHasher<user> _passwordHasher;
+
+//        public LoginController(DatabaseContext context, IPasswordHasher<user> passwordHasher)
+//        {
+//            _context = context;
+//            _passwordHasher = passwordHasher;
+//        }
+
+//        // GET: Login
+//        public IActionResult Index()
+//        {
+//            return View();
+//        }
+
+//        // POST: Login
+//        [HttpPost]
+//        [ValidateAntiForgeryToken]
+//        public async Task<IActionResult> Index(LoginModel model)
+//        {
+//            if (ModelState.IsValid)
+//            {
+//                // Find the user by username
+//                var user = await _context.user.FirstOrDefaultAsync(u => u.Username == model.Username);
+
+//                if (user != null)
+//                {
+//                    // Verify the password using the stored hash
+//                    var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, model.Password);
+
+//                    if (result == PasswordVerificationResult.Success)
+//                    {
+//                        // Successful login: Redirect based on user role
+//                        if (user.Roles == "Student")
+//                        {
+//                            return RedirectToAction("StudentDashboard", "Dashboard");
+//                        }
+//                        else if (user.Roles == "Teacher")
+//                        {
+//                            return RedirectToAction("TeacherDashboard", "Home");
+//                        }
+//                        else
+//                        {
+//                            return RedirectToAction("Index", "Home");
+//                        }
+//                    }
+//                }
+
+//                // If login fails, show an error message
+//                ModelState.AddModelError("", "Invalid login attempt.");
+//            }
+
+//            return View(model);
+//        }
+
+//        // GET: Register
+//        public IActionResult Register()
+//        {
+//            return View();
+//        }
+
+//        // POST: Register
+//        [HttpPost]
+//        [ValidateAntiForgeryToken]
+//        public async Task<IActionResult> Register(RegisterViewModel model)
+//        {
+//            if (ModelState.IsValid)
+//            {
+//                // Check if the username or email already exists
+//                var existingUser = await _context.user
+//                    .FirstOrDefaultAsync(u => u.Username == model.Username || u.Email == model.Email);
+
+//                if (existingUser != null)
+//                {
+//                    ModelState.AddModelError("", "Username or Email already in use.");
+//                    return View(model);
+//                }
+
+//                // Hash the password before storing it
+//                var hashedPassword = _passwordHasher.HashPassword(null, model.Password);
+
+//                // Create a new user object
+//                var user = new user
+//                {
+//                    Username = model.Username,
+//                    Email = model.Email,
+//                    PasswordHash = hashedPassword,
+//                    Roles = model.Roles // Example: 'Student' or 'Teacher'
+//                };
+
+//                _context.user.Add(user); // Add user to the database
+//                await _context.SaveChangesAsync();
+
+//                // Create related profile based on role
+//                if (model.Roles == "Student")
+//                {
+//                    var student = new Students
+//                    {
+//                        Name = model.Username,
+//                        Year = 1 // Default value
+//                    };
+//                    _context.student.Add(student);
+//                }
+//                else if (model.Roles == "Teacher")
+//                {
+//                    var teacher = new Teachers
+//                    {
+//                        Name = model.Username
+//                    };
+//                    _context.Teacher.Add(teacher);
+//                }
+
+//                await _context.SaveChangesAsync();
+
+//                return RedirectToAction("Index", "Login"); // Redirect to login page after successful registration
+//            }
+
+//            return View(model);
+//        }
+//    }
+//}
+
+
+//########################## 17th JAN ##########################################
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
@@ -265,10 +470,11 @@ namespace Scholarly.Controllers
 {
     public class LoginController : Controller
     {
-        private readonly DatabaseContext _context;
-        private readonly IPasswordHasher<Users> _passwordHasher;
+        private readonly DatabaseContext _context; // Database context for querying data
+        private readonly IPasswordHasher<user> _passwordHasher; // Password hasher for password verification
 
-        public LoginController(DatabaseContext context, IPasswordHasher<Users> passwordHasher)
+        // Constructor to inject dependencies
+        public LoginController(DatabaseContext context, IPasswordHasher<user> passwordHasher)
         {
             _context = context;
             _passwordHasher = passwordHasher;
@@ -287,20 +493,20 @@ namespace Scholarly.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Find the user by username
-                var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == model.Username);
+                // Fetch the user by username
+                var user = await _context.user.FirstOrDefaultAsync(u => u.Username == model.Username);
 
                 if (user != null)
                 {
-                    // Verify the password using the stored hash
+                    // Verify password
                     var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, model.Password);
 
                     if (result == PasswordVerificationResult.Success)
                     {
-                        // Successful login: Redirect based on user role
+                        // Redirect based on user role
                         if (user.Roles == "Student")
                         {
-                            return RedirectToAction("StudentDashboard", "Home");
+                            return RedirectToAction("StudentDashboard", "Dashboard");
                         }
                         else if (user.Roles == "Teacher")
                         {
@@ -313,78 +519,12 @@ namespace Scholarly.Controllers
                     }
                 }
 
-                // If login fails, show an error message
+                // Invalid login attempt
                 ModelState.AddModelError("", "Invalid login attempt.");
-            }
-
-            return View(model);
-        }
-
-        // GET: Register
-        public IActionResult Register()
-        {
-            return View("~/Views/Register/Register.cshtml");
-        }
-
-        // POST: Register
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(RegisterViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                // Check if the username or email already exists
-                var existingUser = await _context.Users
-                    .FirstOrDefaultAsync(u => u.Username == model.Username || u.Email == model.Email);
-
-                if (existingUser != null)
-                {
-                    ModelState.AddModelError("", "Username or Email already in use.");
-                    return View(model);
-                }
-
-                // Hash the password before storing it
-                var hashedPassword = _passwordHasher.HashPassword(null, model.Password);
-
-                // Create a new user object
-                var user = new Users
-                {
-                    Username = model.Username,
-                    Email = model.Email,
-                    PasswordHash = hashedPassword,
-                    Roles = model.Roles // Example: 'Student' or 'Teacher'
-                };
-
-                _context.Users.Add(user); // Add user to the database
-                await _context.SaveChangesAsync();
-
-                // Create related profile based on role
-                if (model.Roles == "Student")
-                {
-                    var student = new Students
-                    {
-                        Name = model.Username,
-                        Year = 1 // Default value
-                    };
-                    _context.student.Add(student);
-                }
-                else if (model.Roles == "Teacher")
-                {
-                    var teacher = new Teachers
-                    {
-                        Name = model.Username
-                    };
-                    _context.Teacher.Add(teacher);
-                }
-
-                await _context.SaveChangesAsync();
-
-                return RedirectToAction("Index", "Home");
             }
 
             return View(model);
         }
     }
 }
-
 

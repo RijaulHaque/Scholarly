@@ -5,7 +5,7 @@
 namespace Scholarly.Migrations
 {
     /// <inheritdoc />
-    public partial class RenameUserTable : Migration
+    public partial class AddedMissingForeignkey2ndAttempt : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

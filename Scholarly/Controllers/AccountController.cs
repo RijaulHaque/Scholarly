@@ -7,9 +7,9 @@ using Scholarly.Models;
 public class AccountController : Controller
 {
     private readonly DatabaseContext _context;
-    private readonly IPasswordHasher<Users> _passwordHasher;
+    private readonly IPasswordHasher<user> _passwordHasher;
 
-    public AccountController(DatabaseContext context, IPasswordHasher<Users> passwordHasher)
+    public AccountController(DatabaseContext context, IPasswordHasher<user> passwordHasher)
     {
         _context = context;
         _passwordHasher = passwordHasher;
@@ -30,20 +30,20 @@ public class AccountController : Controller
         if (ModelState.IsValid)
         {
             // Check if the username or email already exists
-            var existingUser = await _context.Users
+            var existingUser = await _context.user
                 .FirstOrDefaultAsync(u => u.Username == model.Username || u.Email == model.Email);
 
             if (existingUser != null)
             {
                 ModelState.AddModelError("", "Username or Email already in use.");
-                return View("~/Views/Login/Index.cshtml");  //if user already exists, redirect to login page
+                return View("~/Views/Register/Index.cshtml");  //if user already exists, redirect to login page
             }
 
             // Hash the password before storing it
             var hashedPassword = _passwordHasher.HashPassword(null, model.Password);
 
             // Create a new user object
-            var user = new Users
+            var user = new user
             {
                 Username = model.Username,
                 Email = model.Email,
@@ -51,7 +51,7 @@ public class AccountController : Controller
                 Roles = model.Roles // Example: 'Student' or 'Teacher'
             };
 
-            _context.Users.Add(user); // Add user to the database
+            _context.user.Add(user); // Add user to the database
             await _context.SaveChangesAsync();
 
             // Create related profile based on role
@@ -75,7 +75,7 @@ public class AccountController : Controller
 
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("Index", "Home");   // Redirect to home page after successful registration
+            return RedirectToAction("Index", "Login");   // Redirect to home page after successful registration
         }
 
         return View(model);

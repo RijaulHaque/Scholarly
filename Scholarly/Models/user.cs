@@ -24,8 +24,8 @@ using Scholarly.Models;
 
 namespace Scholarly.Models
 {
-    [Table("Users")]    // Ensure this matches your actual table name in the database
-    public class Users
+    //[Table("Users")]    // Ensure this matches your actual table name in the database
+    public class user
     {
         [Key]
         public int Id { get; set; }

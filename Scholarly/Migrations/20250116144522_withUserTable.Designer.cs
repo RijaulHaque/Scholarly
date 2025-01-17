@@ -12,8 +12,8 @@ using Scholarly.DAL;
 namespace Scholarly.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20250115054329_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250116144522_withUserTable")]
+    partial class withUserTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -28,10 +28,7 @@ namespace Scholarly.Migrations
             modelBuilder.Entity("Scholarly.Models.Attendance", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<bool>("AttendanceData")
                         .HasColumnType("bit");
@@ -39,12 +36,7 @@ namespace Scholarly.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("EnrollmentsId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("EnrollmentsId");
 
                     b.ToTable("Attendance");
                 });
@@ -59,7 +51,8 @@ namespace Scholarly.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
@@ -69,12 +62,6 @@ namespace Scholarly.Migrations
             modelBuilder.Entity("Scholarly.Models.Enrollments", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("CoursesId")
                         .HasColumnType("int");
 
                     b.Property<float>("Grade")
@@ -91,8 +78,6 @@ namespace Scholarly.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CoursesId");
-
                     b.ToTable("Enrollments");
                 });
 
@@ -106,7 +91,8 @@ namespace Scholarly.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<int>("Year")
                         .HasColumnType("int");
@@ -126,14 +112,15 @@ namespace Scholarly.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
 
                     b.ToTable("Teacher");
                 });
 
-            modelBuilder.Entity("Scholarly.Models.Users", b =>
+            modelBuilder.Entity("Scholarly.Models.user", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -160,21 +147,25 @@ namespace Scholarly.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("user", (string)null);
                 });
 
             modelBuilder.Entity("Scholarly.Models.Attendance", b =>
                 {
                     b.HasOne("Scholarly.Models.Enrollments", null)
                         .WithMany("Attendance")
-                        .HasForeignKey("EnrollmentsId");
+                        .HasForeignKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Scholarly.Models.Enrollments", b =>
                 {
                     b.HasOne("Scholarly.Models.Courses", null)
                         .WithMany("Enrollments")
-                        .HasForeignKey("CoursesId");
+                        .HasForeignKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Scholarly.Models.Courses", b =>
