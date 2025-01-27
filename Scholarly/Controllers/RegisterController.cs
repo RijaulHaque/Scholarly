@@ -4,12 +4,12 @@ using Microsoft.EntityFrameworkCore;
 using Scholarly.DAL;
 using Scholarly.Models;
 
-public class AccountController : Controller
+public class RegisterController : Controller
 {
     private readonly DatabaseContext _context;
     private readonly IPasswordHasher<user> _passwordHasher;
 
-    public AccountController(DatabaseContext context, IPasswordHasher<user> passwordHasher)
+    public RegisterController(DatabaseContext context, IPasswordHasher<user> passwordHasher)
     {
         _context = context;
         _passwordHasher = passwordHasher;
@@ -17,15 +17,15 @@ public class AccountController : Controller
 
     // GET: Register
     [HttpGet]
-    public IActionResult Register()
+    public IActionResult Index()
     {
-        return View("~/Views/Register/Register.cshtml");
+        return View();
     }
 
     // POST: Register
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Register(RegisterViewModel model) // Use RegisterViewModel here
+    public async Task<IActionResult> Index(RegisterViewModel model) // Use RegisterViewModel here
     {
         if (ModelState.IsValid)
         {
@@ -36,7 +36,7 @@ public class AccountController : Controller
             if (existingUser != null)
             {
                 ModelState.AddModelError("", "Username or Email already in use.");
-                return View("~/Views/Register/Index.cshtml");  //if user already exists, redirect to login page
+                return View("~/Views/Login/Index.cshtml");  //if user already exists, redirect to login page
             }
 
             // Hash the password before storing it
@@ -60,7 +60,9 @@ public class AccountController : Controller
                 var student = new Students
                 {
                     Name = model.Username,
-                    Year = 1 // Default value
+                    Year = 1, // Default value
+                    Email = model.Email,
+                    UserId = user.Id
                 };
                 _context.student.Add(student);
             }
@@ -68,7 +70,8 @@ public class AccountController : Controller
             {
                 var teacher = new Teachers
                 {
-                    Name = model.Username
+                    Name = model.Username,
+                    UserId = user.Id
                 };
                 _context.Teacher.Add(teacher);
             }
