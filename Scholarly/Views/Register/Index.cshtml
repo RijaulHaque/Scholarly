@@ -1,0 +1,74 @@
+﻿@model Scholarly.Models.RegisterViewModel
+
+@{
+    ViewBag.Title = "Register";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg">
+                <div class="card-body">
+                    <h2 class="text-center dynamic-welcome mb-4">Register</h2>
+
+                    @using (Html.BeginForm("Index", "Register", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <div class="form-floating mb-3">
+                            @Html.TextBoxFor(model => model.Username, new { @class = "form-control border border-1 border-dark", @placeholder = "Enter your username" })
+                            @Html.LabelFor(model => model.Username, new { @class = "form-label" })
+                            @Html.ValidationMessageFor(model => model.Username, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            @Html.TextBoxFor(model => model.Email, new { @class = "form-control border border-1 border-dark", @placeholder = "Enter your email" })
+                            @Html.LabelFor(model => model.Email, new { @class = "form-label" })
+                            @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            @Html.PasswordFor(model => model.Password, new { @class = "form-control border border-1 border-dark", @placeholder = "Enter your password" })
+                            @Html.LabelFor(model => model.Password, new { @class = "form-label" })
+                            @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            @Html.PasswordFor(model => model.ConfirmPassword, new { @class = "form-control border border-1 border-dark", @placeholder = "Confirm your password" })
+                            @Html.LabelFor(model => model.ConfirmPassword, new { @class = "form-label" })
+                            @Html.ValidationMessageFor(model => model.ConfirmPassword, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="form-floating mb-4">
+                            @Html.DropDownListFor(model => model.Roles, new List<SelectListItem>
+                        {
+                        new SelectListItem { Text = "Student", Value = "Student" },
+                        new SelectListItem { Text = "Teacher", Value = "Teacher" }
+                        }, "--Select Role--", new { @class = "form-control border border-1 border-dark" })
+                            @Html.LabelFor(model => model.Roles, new { @class = "form-label" })
+                            @Html.ValidationMessageFor(model => model.Roles, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary animated-button m-3" style="background-color: #007bff; border-color: #007bff; color: white;">Register</button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Add button animation
+        document.querySelectorAll('.animated-button').forEach(button => {
+            button.addEventListener('mouseover', () => {
+                button.classList.add('hovered');
+            });
+            button.addEventListener('mouseout', () => {
+                button.classList.remove('hovered');
+            });
+        });
+    </script>
+}

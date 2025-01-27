@@ -71,6 +71,96 @@
 //}
 
 //####################### NEW CODE 16 JAN #######################
+//using Microsoft.AspNetCore.Mvc;
+//using Microsoft.EntityFrameworkCore;
+//using Scholarly.DAL;
+//using Scholarly.Models;
+//using System.Linq;
+//using System.Threading.Tasks;
+
+//namespace Scholarly.Controllers
+//{
+//    public class HomeController : Controller
+//    {
+//        private readonly DatabaseContext _context;
+
+//        public HomeController(DatabaseContext context)
+//        {
+//            _context = context;
+//        }
+
+//        public IActionResult Index()
+//        {
+//            return View();
+//        }
+
+//        public IActionResult Privacy()
+//        {
+//            return View();
+//        }
+
+//        public async Task<IActionResult> StudentDashboard()
+//        {
+//            var user = await _context.user
+//                .Where(u => u.Username == User.Identity.Name)
+//                .FirstOrDefaultAsync();
+
+//            if (user == null)
+//            {
+//                return NotFound();
+//            }
+
+//            var student = await _context.student
+//                .Where(s => s.Name == user.Username)
+//                .FirstOrDefaultAsync();
+
+//            if (student == null)
+//            {
+//                return NotFound();
+//            }
+
+//            var enrollments = await _context.Enrollments
+//                .Where(e => e.StudentId == student.Id)
+//                .Include(e => e.Courses)
+//                .Include(e => e.Attendance)
+//                .ToListAsync();
+
+//            var model = new StudentDashboardViewModel
+//            {
+//                StudentId = student.Id,
+//                Username = user.Username,
+//                Email = user.Email,
+//                Year = student.Year,
+//                Enrollments = enrollments
+//            };
+
+//            return View(model);
+//        }
+
+//        [HttpPost]
+//        public async Task<IActionResult> AddAttendance(int enrollmentId, int studentId, bool isPresent)
+//        {
+//            var attendance = new Attendance
+//            {
+//                Date = DateTime.Now,
+//                EnrollmentsId = enrollmentId,
+//                AttendanceData = isPresent
+//            };
+
+//            _context.Attendance.Add(attendance);
+//            await _context.SaveChangesAsync();
+
+//            return RedirectToAction("StudentDashboard");
+//        }
+
+//        public IActionResult Error()
+//        {
+//            return View();
+//        }
+//    }
+//}
+
+//######### 21st Jan code ################
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Scholarly.DAL;
@@ -125,32 +215,9 @@ namespace Scholarly.Controllers
                 .Include(e => e.Attendance)
                 .ToListAsync();
 
-            var model = new StudentDashboardViewModel
-            {
-                StudentId = student.Id,
-                Username = user.Username,
-                Email = user.Email,
-                Year = student.Year,
-                Enrollments = enrollments
-            };
+            var model = new StudentDashboardViewModel(student);
 
             return View(model);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> AddAttendance(int enrollmentId, int studentId, bool isPresent)
-        {
-            var attendance = new Attendance
-            {
-                Date = DateTime.Now,
-                EnrollmentsId = enrollmentId,
-                AttendanceData = isPresent
-            };
-
-            _context.Attendance.Add(attendance);
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction("StudentDashboard");
         }
 
         public IActionResult Error()

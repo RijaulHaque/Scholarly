@@ -1,0 +1,262 @@
+﻿@model Scholarly.Models.TeacherDashboardViewModel
+
+@{
+    ViewData["Title"] = "Teacher Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <h2 class="text-center dynamic-welcome mb-4">Teacher Dashboard</h2>
+
+    <!-- Logout Button -->
+    <div class="text-right mb-4">
+        <form asp-action="Logout" method="post">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-danger">
+                <i class="fa fa-sign-out-alt"></i> Logout
+            </button>
+        </form>
+    </div>
+
+    <!-- Basic Information Section -->
+    <section class="card mb-4 shadow-sm border border-1 border-dark">
+        <header class="card-header bg-primary text-white">
+            <h5 class="mb-0">Basic Information</h5>
+        </header>
+        <div class="card-body">
+            <p><strong>Username:</strong> @Model.Username</p>
+        </div>
+    </section>
+
+    <!-- Teacher Profile Section -->
+    <section class="card mb-4 shadow-sm border border-1 border-dark">
+        <header class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Teacher Profile</h5>
+            <button type="button" class="btn btn-warning animated-button m-2" id="editProfileBtn">
+                <i class="fa fa-pencil-alt"></i> Edit Profile
+            </button>
+        </header>
+        <div class="card-body">
+            <h6>Current Profile Details</h6>
+            <p><strong>Full Name:</strong> @Model.FullName</p>
+            <p><strong>Employee Registration No:</strong> @Model.EmployeeRegistrationNo</p>
+            <p><strong>Phone No:</strong> @Model.PhoneNo</p>
+            <p><strong>Address:</strong> @Model.Address</p>
+
+            <hr />
+
+            <!-- Profile Update Form (Initially Hidden) -->
+            <div id="updateProfileForm" class="d-none">
+                <form asp-action="UpdateProfile" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="TeacherId" />
+
+                    <div class="form-floating mb-3">
+                        @Html.TextBoxFor(model => model.FullName, new { @class = "form-control border border-1 border-dark", @placeholder = "Enter Full Name" })
+                        @Html.LabelFor(model => model.FullName, new { @class = "form-label" })
+                        @Html.ValidationMessageFor(model => model.FullName, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        @Html.TextBoxFor(model => model.EmployeeRegistrationNo, new { @class = "form-control border border-1 border-dark", @placeholder = "Enter Employee Registration No" })
+                        @Html.LabelFor(model => model.EmployeeRegistrationNo, new { @class = "form-label" })
+                        @Html.ValidationMessageFor(model => model.EmployeeRegistrationNo, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        @Html.TextBoxFor(model => model.PhoneNo, new { @class = "form-control border border-1 border-dark", @placeholder = "Enter Phone No" })
+                        @Html.LabelFor(model => model.PhoneNo, new { @class = "form-label" })
+                        @Html.ValidationMessageFor(model => model.PhoneNo, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        @Html.TextAreaFor(model => model.Address, new { @class = "form-control border border-1 border-dark", @placeholder = "Enter Address", rows = 3 })
+                        @Html.LabelFor(model => model.Address, new { @class = "form-label" })
+                        @Html.ValidationMessageFor(model => model.Address, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-warning animated-button" style="color: white; background-color: #ff5733; border-color: #ff5733;">
+                            <i class="fa fa-save"></i> Update Profile
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Courses Section -->
+    <section class="card mb-4 shadow-sm border border-1 border-dark">
+        <header class="card-header bg-success text-white">
+            <h5 class="mb-0">Courses</h5>
+        </header>
+        <div class="card-body">
+            @if (Model.Courses != null && Model.Courses.Any())
+            {
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Course Name</th>
+                            <th>Semester</th>
+                            <th>Enrollments</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var course in Model.Courses)
+                        {
+                            <tr>
+                                <td>@course.Name</td>
+                                <td>@course.Semester</td>
+                                <td>
+                                    @if (course.Enrollments != null && course.Enrollments.Any())
+                                    {
+                                        <table class="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>Student</th>
+                                                    <th>Attendance</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var enrollment in course.Enrollments)
+                                                {
+                                                    <tr>
+                                                        <td>@enrollment.StudentId</td>
+                                                        <td>
+                                                            @if (enrollment.Attendance != null && enrollment.Attendance.Any())
+                                                            {
+                                                                <div class="attendance-calendar">
+                                                                    @{
+                                                                        var daysInMonth = DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month);
+                                                                        for (int day = 1; day <= daysInMonth; day++)
+                                                                        {
+                                                                            var date = new DateTime(DateTime.Now.Year, DateTime.Now.Month, day);
+                                                                            var attendance = enrollment.Attendance.FirstOrDefault(a => a.Date == date);
+                                                                            var isApproved = attendance != null && attendance.IsApproved;
+                                                                            var color = isApproved ? "green" : "red"; // Green for approved, red for not approved
+                                                                            <div class="attendance-day" style="background-color: @color;" data-date="@date.ToString("yyyy-MM-dd")">@day</div>
+                                                                        }
+                                                                    }
+                                                                </div>
+                                                            }
+                                                            else
+                                                            {
+                                                                <p>No attendance data available.</p>
+                                                            }
+                                                        </td>
+                                                        <td>
+                                                            @if (enrollment.Attendance != null && enrollment.Attendance.Any())
+                                                            {
+                                                                @foreach (var attendance in enrollment.Attendance)
+                                                                {
+                                                                    @if (!attendance.IsApproved)
+                                                                    {
+                                                                        <form asp-action="ApproveAttendance" method="post" class="approve-attendance-form">
+                                                                            @Html.AntiForgeryToken()
+                                                                            <input type="hidden" name="courseId" value="@course.Id" />
+                                                                            <input type="hidden" name="date" value="@attendance.Date.ToString("yyyy-MM-dd")" />
+                                                                            <button type="submit" class="btn btn-primary">Approve</button>
+                                                                        </form>
+                                                                    }
+                                                                }
+                                                            }
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    }
+                                    else
+                                    {
+                                        <p>No enrollments found.</p>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p>No courses found.</p>
+            }
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById("editProfileBtn").onclick = function () {
+            const form = document.getElementById("updateProfileForm");
+            const button = document.getElementById("editProfileBtn");
+
+            form.classList.toggle("d-none");
+            button.classList.toggle("btn-warning");
+            button.classList.toggle("btn-outline-warning");
+        };
+
+        // Mark attendance as green once approved
+        document.querySelectorAll('.approve-attendance-form').forEach(form => {
+            form.onsubmit = function (event) {
+                event.preventDefault();
+                var formData = new FormData(form);
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData
+                }).then(response => {
+                    if (response.ok) {
+                        var date = form.querySelector('input[name="date"]').value;
+                        var calendar = form.closest('tr').querySelector('.attendance-calendar');
+                        var dayDiv = calendar.querySelector(`[data-date="${date}"]`);
+                        dayDiv.style.backgroundColor = 'green';
+                    }
+                });
+            };
+        });
+    </script>
+}
+
+<style>
+    .attendance-calendar {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 5px;
+        margin-top: 10px;
+    }
+
+    .attendance-day {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 0.8em;
+        border-radius: 50%;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s;
+    }
+
+        .attendance-day:hover {
+            transform: scale(1.1);
+        }
+
+    .card-header {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 1.25em;
+        font-weight: bold;
+    }
+
+    .card-body {
+        font-family: 'Lato', sans-serif;
+        font-size: 1em;
+    }
+
+    .btn {
+        font-family: 'Poppins', sans-serif;
+        font-size: 1em;
+        font-weight: bold;
+    }
+</style>

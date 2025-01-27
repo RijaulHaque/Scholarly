@@ -4,9 +4,29 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
+    <h1 class="display-4 dynamic-welcome">Welcome</h1>
+    <p class="description">
+        Scholarly is an advanced attendance and grading system designed to streamline the educational process.
+        Teachers can easily manage courses, track student attendance, and update grades, while students can
+        view their progress and stay informed.
+    </p>
     <p>
-        <a asp-controller="Login" asp-action="Index" class="btn btn-primary">Login</a>
-        <a asp-controller="Account" asp-action="Register" class="btn btn-secondary">Register</a>
+        <a asp-controller="Login" asp-action="Index" class="btn btn-primary animated-button m-2">Login</a>
+        <a asp-controller="Register" asp-action="Index" class="btn btn-secondary animated-button m-2">Register</a>
+        <a asp-controller="Dashboard" asp-action="Index" class="btn btn-success animated-button m-2">Dashboard</a>
     </p>
 </div>
+
+@section Scripts {
+    <script>
+        // Add button animation
+        document.querySelectorAll('.animated-button').forEach(button => {
+            button.addEventListener('mouseover', () => {
+                button.classList.add('hovered');
+            });
+            button.addEventListener('mouseout', () => {
+                button.classList.remove('hovered');
+            });
+        });
+    </script>
+}

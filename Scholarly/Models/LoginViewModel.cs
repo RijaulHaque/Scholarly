@@ -1,16 +1,18 @@
 ﻿using System.ComponentModel.DataAnnotations;  // Required for validation annotations
 
-namespace Scholarly.Models  
+namespace Scholarly.Models
 {
-    
-    public class LoginModel
+    public class LoginViewModel
     {
-            public string Username { get; set; }
-            public string Password { get; set; }
-            public string Role { get; set; }  // Role selected during registration
-    }
+        [Required(ErrorMessage = "Username is required")]
+        public string Username { get; set; }
 
+        [Required(ErrorMessage = "Password is required")]
+        [DataType(DataType.Password)]
+        public string Password { get; set; }
+    }
 }
+
 
 
 //######################################### OLD CODE ##########################################//
@@ -18,8 +20,8 @@ namespace Scholarly.Models
 //public class LoginModel
 //{
 //        //[Required(ErrorMessage = "Username is required.")]
-        //[Display(Name = "Username")]
-        //public string Username { get; set; } = string.Empty;
+//[Display(Name = "Username")]
+//public string Username { get; set; } = string.Empty;
 
 //[Required(ErrorMessage = "Password is required.")]
 //[DataType(DataType.Password)]  // Hides password as typed

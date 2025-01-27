@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Scholarly.DAL;
 
@@ -11,9 +12,11 @@ using Scholarly.DAL;
 namespace Scholarly.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20250124204333_Update2")]
+    partial class Update2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,20 +33,14 @@ namespace Scholarly.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AttendanceData")
-                        .HasColumnType("int");
+                    b.Property<bool>("AttendanceData")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
                     b.Property<int?>("EnrollmentsId")
                         .HasColumnType("int");
-
-                    b.Property<bool>("IsApproved")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsSubmitted")
-                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -89,8 +86,7 @@ namespace Scholarly.Migrations
                     b.Property<int?>("CoursesId")
                         .HasColumnType("int");
 
-                    b.Property<float?>("Grade")
-                        .HasMaxLength(100)
+                    b.Property<float>("Grade")
                         .HasColumnType("real");
 
                     b.Property<int?>("StudentId")

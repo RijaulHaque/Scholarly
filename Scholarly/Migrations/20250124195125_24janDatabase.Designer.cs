@@ -12,8 +12,8 @@ using Scholarly.DAL;
 namespace Scholarly.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20250116185708_AddedMissingForeignkey2ndAttempt")]
-    partial class AddedMissingForeignkey2ndAttempt
+    [Migration("20250124195125_24janDatabase")]
+    partial class _24janDatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -39,7 +39,7 @@ namespace Scholarly.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("EnrollmentsId")
+                    b.Property<int?>("EnrollmentsId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -62,7 +62,15 @@ namespace Scholarly.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<int?>("Semester")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TeachersId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("TeachersId");
 
                     b.ToTable("course");
                 });
@@ -75,24 +83,26 @@ namespace Scholarly.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CoursesId")
+                    b.Property<int?>("CoursesId")
                         .HasColumnType("int");
 
                     b.Property<float>("Grade")
                         .HasColumnType("real");
 
-                    b.Property<int>("StudentId")
+                    b.Property<int?>("StudentId")
                         .HasColumnType("int");
 
-                    b.Property<int>("TeachersId")
+                    b.Property<int?>("TeachersId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Year")
+                    b.Property<int?>("Year")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CoursesId");
+
+                    b.HasIndex("StudentId");
 
                     b.ToTable("Enrollments");
                 });
@@ -105,8 +115,30 @@ namespace Scholarly.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Address")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int?>("CurrentSemester")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FullName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("PhoneNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RegistrationNo")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
@@ -126,10 +158,25 @@ namespace Scholarly.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Address")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("EmployeeRegistrationNo")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("FullName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("PhoneNo")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -171,10 +218,16 @@ namespace Scholarly.Migrations
                     b.HasOne("Scholarly.Models.Enrollments", "Enrollments")
                         .WithMany("Attendance")
                         .HasForeignKey("EnrollmentsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Enrollments");
+                });
+
+            modelBuilder.Entity("Scholarly.Models.Courses", b =>
+                {
+                    b.HasOne("Scholarly.Models.Teachers", null)
+                        .WithMany("Courses")
+                        .HasForeignKey("TeachersId");
                 });
 
             modelBuilder.Entity("Scholarly.Models.Enrollments", b =>
@@ -182,8 +235,11 @@ namespace Scholarly.Migrations
                     b.HasOne("Scholarly.Models.Courses", "Courses")
                         .WithMany("Enrollments")
                         .HasForeignKey("CoursesId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Scholarly.Models.Students", null)
+                        .WithMany("Enrollments")
+                        .HasForeignKey("StudentId");
 
                     b.Navigation("Courses");
                 });
@@ -196,6 +252,16 @@ namespace Scholarly.Migrations
             modelBuilder.Entity("Scholarly.Models.Enrollments", b =>
                 {
                     b.Navigation("Attendance");
+                });
+
+            modelBuilder.Entity("Scholarly.Models.Students", b =>
+                {
+                    b.Navigation("Enrollments");
+                });
+
+            modelBuilder.Entity("Scholarly.Models.Teachers", b =>
+                {
+                    b.Navigation("Courses");
                 });
 #pragma warning restore 612, 618
         }
