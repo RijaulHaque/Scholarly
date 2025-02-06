@@ -32,5 +32,5 @@ A full-stack application designed to manage student grades and attendance. This 
 ### Clone the repository
 
 ```bash
-git clone https://github.com/your-username/repository-name.git
-cd repository-name
+git clone https://github.com/RijaulHaque/Scholarly.git
+cd Scholarly
